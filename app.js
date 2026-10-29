@@ -95,7 +95,12 @@ async function refresh(quiet) {
   try {
     let text;
     if (repoOk()) {
-      text = await gh("/contents/pulse.json?ref=data", { raw: true });
+      text = await gh("/contents/pulse.json?ref=data", { raw: true, allow404: true });
+      if (text == null) {
+        await gh(""); // wirft eine klare Meldung, falls das Repository nicht stimmt
+        if (!state.firstSyncAsked) { state.firstSyncAsked = true; triggerSync(true, true); }
+        throw new Error("Noch keine Daten. Der erste Garmin-Abruf läuft und dauert 3–5 Minuten. Tippe danach oben auf ↻.");
+      }
       gh("/actions/runs?per_page=1").then((r) => { state.lastRun = r?.workflow_runs?.[0] || null; }).catch(() => {});
       syncJournalDown().catch(() => {});
     } else {
@@ -150,11 +155,11 @@ async function editSessions(fn, message) {
   return false;
 }
 
-async function triggerSync(silent) {
+async function triggerSync(silent, quiet) {
   if (!repoOk()) { await refresh(); return; }
   try {
     await gh("/actions/workflows/sync.yml/dispatches", { method: "POST", body: JSON.stringify({ ref: "main" }) });
-    toast(silent ? "Gespeichert. Strain wird in 1–2 Minuten neu berechnet." : "Sync gestartet. Neue Daten in 1–2 Minuten.");
+    if (!quiet) toast(silent ? "Gespeichert. Strain wird in 1–2 Minuten neu berechnet." : "Sync gestartet. Neue Daten in 1–2 Minuten.");
     setTimeout(() => refresh(true), 100_000);
   } catch (e) { toast(e.message); }
 }
@@ -692,10 +697,12 @@ function viewSettings() {
     <button class="btn ghost" data-action="sync">Jetzt mit Garmin synchronisieren</button>
     <p class="small muted">GitHub holt automatisch alle 30 Minuten deine Garmin-Daten (nachts seltener).</p></div>
   <div class="card">${title("Schlaf-Rhythmus")}
-    <div class="between small"><span class="muted">Ins Bett</span><span>${sch.bedtime || "–"}</span></div>
-    <div class="between small"><span class="muted">Aufstehen Mo–Fr</span><span>${sch.wake_weekday || "–"}</span></div>
-    <div class="between small"><span class="muted">Aufstehen Sa–So</span><span>${sch.wake_weekend || "–"}</span></div>
-    <p class="small muted">Ändern in engine/common.py im Repository.</p></div>
+    <label class="f"><span>Ins Bett</span><input class="in" id="schBed" type="time" value="${esc(sch.bedtime || "22:30")}"></label>
+    <div class="grid2" style="margin-bottom:12px">
+      <label class="f" style="margin:0"><span>Aufstehen Mo–Fr</span><input class="in" id="schWd" type="time" value="${esc(sch.wake_weekday || "06:30")}"></label>
+      <label class="f" style="margin:0"><span>Aufstehen Sa–So</span><input class="in" id="schWe" type="time" value="${esc(sch.wake_weekend || "07:30")}"></label></div>
+    <button class="btn ghost" data-action="save-schedule">Schlafzeiten speichern</button>
+    <p class="small muted">Daraus berechnet Puls Schlafbedarf, Schlafplaner und Konstanz.</p></div>
   <div class="card">${title("Profil")}
     <div class="between small"><span class="muted">Name</span><span>${esc(state.data?.profile?.name || "–")}</span></div>
     <div class="between small"><span class="muted">Nächte mit Recovery</span><span>${state.data?.nightsWithRecovery ?? "–"}</span></div></div>`;
@@ -782,6 +789,20 @@ const ACTIONS = {
     if (!confirm("Training wirklich löschen?")) return;
     el.disabled = true;
     if (await editSessions((s) => s.filter((x) => x.id !== el.dataset.id), "Training gelöscht")) history.back();
+    el.disabled = false;
+  },
+  "save-schedule": async (el) => {
+    if (!repoOk()) { toast("Erst GitHub in den Einstellungen verbinden."); return; }
+    const v = (id) => document.getElementById(id).value;
+    const schedule = { bedtime: v("schBed"), wake_weekday: v("schWd"), wake_weekend: v("schWe") };
+    if (!Object.values(schedule).every((t) => /^\d\d:\d\d$/.test(t))) { toast("Bitte alle drei Uhrzeiten ausfüllen."); return; }
+    el.disabled = true;
+    try {
+      const { value, sha } = await readRepoJson("data/settings.json", {});
+      await writeRepoJson("data/settings.json", { ...value, schedule }, sha, "Schlafzeiten");
+      if (state.data) state.data.schedule = schedule;
+      await triggerSync(true);
+    } catch (e) { toast(e.message); }
     el.disabled = false;
   },
   "save-settings": async () => {

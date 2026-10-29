@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Puls</title>
+  <meta name="theme-color" content="#0A0C0F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Puls">
+  <meta name="robots" content="noindex">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="view"></main>
+  <nav id="tabs">
+    <a href="#/" data-tab="home"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg><span>Heute</span></a>
+    <a href="#/trends" data-tab="trends"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 3 6-8 3 3"/></svg><span>Trends</span></a>
+    <a href="#/journal" data-tab="journal"><svg viewBox="0 0 24 24"><path d="M6 3h11a1 1 0 011 1v16a1 1 0 01-1 1H6zM6 3v18M10 8h5M10 12h5"/></svg><span>Journal</span></a>
+    <a href="#/health" data-tab="health"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg><span>Gesundheit</span></a>
+  </nav>
+  <div id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>

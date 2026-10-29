@@ -21,19 +21,21 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; background: var(--bg); color: var(--text); }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+/* Nur <main> scrollt. Eine position:fixed-Leiste verrutscht in iOS-Home-Bildschirm-Apps beim Scrollen. */
 body {
   font: 15px/1.35 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overscroll-behavior-y: none;
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
 }
 button, input, select { font: inherit; color: inherit; }
 a { color: inherit; text-decoration: none; }
 
 main {
-  max-width: 560px;
-  margin: 0 auto;
-  padding: calc(env(safe-area-inset-top) + 8px) 16px calc(var(--tabh) + env(safe-area-inset-bottom) + 24px);
+  flex: 1; min-height: 0;
+  overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
+  padding: calc(env(safe-area-inset-top) + 8px) max(16px, calc(50% - 264px)) 24px;
 }
 
 /* Kopfzeilen */
@@ -144,10 +146,10 @@ input.in:focus, select.in:focus { border-color: var(--strain); }
 
 /* Tab-Leiste */
 #tabs {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  flex: none; z-index: 10;
   display: flex; justify-content: space-around;
   padding: 6px 8px calc(env(safe-area-inset-bottom) + 4px);
-  background: rgba(10,12,15,.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  background: #0A0C0F;
   border-top: 1px solid var(--line);
 }
 #tabs a { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: var(--sub); width: 72px; padding-top: 2px; }
@@ -155,7 +157,7 @@ input.in:focus, select.in:focus { border-color: var(--strain); }
 #tabs svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
 #toast {
-  position: fixed; left: 50%; bottom: calc(var(--tabh) + env(safe-area-inset-bottom) + 16px);
+  position: absolute; left: 50%; bottom: calc(var(--tabh) + env(safe-area-inset-bottom) + 16px);
   transform: translateX(-50%) translateY(20px); opacity: 0; transition: .25s;
   background: var(--card2); border: 1px solid var(--line); padding: 10px 14px; border-radius: 12px;
   font-size: 13px; max-width: calc(100% - 32px); z-index: 20; pointer-events: none;

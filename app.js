@@ -272,7 +272,7 @@ function barChart(list, value, color, { max, height = 140, highlight, digits = 0
     const op = highlight && highlight !== d.date ? 0.45 : 1;
     g += `<rect x="${i * bw + bw * 0.15}" y="${y(v)}" width="${bw * 0.7}" height="${Math.max(1, plotH - y(v))}" rx="2" fill="${color(v)}" opacity="${op}"/>`;
   });
-  return `<svg class="chart" viewBox="0 0 ${W} ${h}">${g}${dayAxis(list, x, h - 4)}</svg>`;
+  return `<svg class="chart" viewBox="0 -8 ${W} ${h + 8}">${g}${dayAxis(list, x, h - 4)}</svg>`;
 }
 
 function lineChart(list, value, color, { height = 130, baseline } = {}) {
@@ -287,7 +287,7 @@ function lineChart(list, value, color, { height = 130, baseline } = {}) {
   if (baseline != null) g += `<line x1="0" x2="${W - 30}" y1="${y(baseline)}" y2="${y(baseline)}" stroke="${C.sub}" stroke-dasharray="4 4"/>`;
   g += `<polyline fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" points="${pts.map((p) => `${x(p[0])},${y(p[1])}`).join(" ")}"/>`;
   g += pts.map((p) => `<circle cx="${x(p[0])}" cy="${y(p[1])}" r="${list.length > 40 ? 1.5 : 2.5}" fill="${color}"/>`).join("");
-  return `<svg class="chart" viewBox="0 0 ${W} ${h}">${g}${dayAxis(list, x, h - 4)}</svg>`;
+  return `<svg class="chart" viewBox="0 -8 ${W} ${h + 8}">${g}${dayAxis(list, x, h - 4)}</svg>`;
 }
 
 function timeAxis(x, h, stepH = 6) {
@@ -308,7 +308,7 @@ function hrChart(date, timeline, activities) {
   }
   for (const v of [50, 100, 150]) g += `<text x="${W - 30}" y="${y(v) + 3}">${v}</text>`;
   g += `<polyline fill="none" stroke="${C.red}" stroke-width="1.6" stroke-linejoin="round" points="${timeline.map((p) => `${x(p[0])},${y(p[1])}`).join(" ")}"/>`;
-  return `<svg class="chart" viewBox="0 0 ${W} ${h}">${g}</svg>`;
+  return `<svg class="chart" viewBox="0 -8 ${W} ${h + 8}">${g}</svg>`;
 }
 
 function hypnogram(segments) {
@@ -325,7 +325,7 @@ function hypnogram(segments) {
     const a = parse(s.start), b = parse(s.end), i = rows.indexOf(s.stage);
     g += `<rect x="${x(a)}" y="${i * rowH + rowH * 0.15}" width="${Math.max(1.5, x(b) - x(a))}" height="${rowH * 0.7}" rx="2" fill="${stageColor(s.stage)}"/>`;
   }
-  return `<svg class="chart" viewBox="0 0 ${W} ${h}">${g}</svg>`;
+  return `<svg class="chart" viewBox="0 -8 ${W} ${h + 8}">${g}</svg>`;
 }
 
 function stressChart(date, timeline) {
@@ -336,7 +336,7 @@ function stressChart(date, timeline) {
     const v = (v100 / 100) * 3;
     g += `<rect x="${x(m)}" y="${y(v)}" width="3" height="${plotH - y(v)}" fill="${v < 1 ? C.battery : v < 2 ? C.stress : C.red}"/>`;
   }
-  return `<svg class="chart" viewBox="0 0 ${W} ${h}">${g}</svg>`;
+  return `<svg class="chart" viewBox="0 -8 ${W} ${h + 8}">${g}</svg>`;
 }
 
 function scatter(pairs) {
@@ -345,7 +345,7 @@ function scatter(pairs) {
   for (const r of [0, 25, 50, 75, 100]) g += `<line x1="0" x2="${W - 30}" y1="${y(r)}" y2="${y(r)}" stroke="${C.line}"/><text x="${W - 26}" y="${y(r) + 3}">${r}</text>`;
   for (const s of [0, 5, 10, 15, 20]) g += `<text x="${x(s)}" y="${h - 4}" text-anchor="middle">${s}</text>`;
   g += pairs.map(([s, r]) => `<circle cx="${x(s)}" cy="${y(r)}" r="4" fill="${recColor(r)}"/>`).join("");
-  return `<svg class="chart" viewBox="0 0 ${W} ${h}">${g}</svg>`;
+  return `<svg class="chart" viewBox="0 -8 ${W} ${h + 8}">${g}</svg>`;
 }
 
 // ------------------------------------------------------------------ Ansichten
@@ -513,7 +513,7 @@ function sleepChart(list) {
     g += `<rect x="${i * bw + bw * 0.18}" y="${y(a)}" width="${bw * 0.64}" height="${plotH - y(a)}" rx="2" fill="${C.sleep}"/>`;
     g += `<line x1="${i * bw + bw * 0.08}" x2="${i * bw + bw * 0.92}" y1="${y(n)}" y2="${y(n)}" stroke="${C.text}" stroke-width="2" stroke-dasharray="3 2"/>`;
   });
-  return `<svg class="chart" viewBox="0 0 ${W} ${h}">${g}${dayAxis(list, x, h - 4)}</svg>`;
+  return `<svg class="chart" viewBox="0 -8 ${W} ${h + 8}">${g}${dayAxis(list, x, h - 4)}</svg>`;
 }
 
 function viewStrain(date) {
@@ -799,7 +799,7 @@ document.addEventListener("click", (e) => {
   e.preventDefault();
   ACTIONS[el.dataset.action]?.(el);
 });
-window.addEventListener("hashchange", () => { render(); window.scrollTo(0, 0); });
+window.addEventListener("hashchange", () => { render(); document.getElementById("view").scrollTop = 0; });
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") refresh(true); });
 
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");

@@ -802,12 +802,6 @@ document.addEventListener("click", (e) => {
 window.addEventListener("hashchange", () => { render(); document.getElementById("view").scrollTop = 0; });
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") refresh(true); });
 
-// Home-Bildschirm-App: volle Bildschirmhöhe statt der (zu kleinen) Fensterhöhe.
-if (navigator.standalone) {
-  const fit = () => document.documentElement.style.setProperty("--app-h", `${Math.max(screen.height, innerHeight)}px`);
-  fit();
-  window.addEventListener("resize", fit);
-}
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");
 if (!repoOk() && !state.data && location.protocol === "https:" && !location.hash) location.hash = "#/settings";
 render();

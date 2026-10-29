@@ -1,6 +1,6 @@
 // Offline-Fähigkeit: App-Dateien werden zwischengespeichert, aber immer zuerst
 // frisch aus dem Netz geholt. So kommt jede neue Version beim nächsten Öffnen an.
-const CACHE = "puls-shell-v3";
+const CACHE = "puls-shell-v2";
 const SHELL = ["./", "index.html", "styles.css", "app.js", "manifest.webmanifest",
   "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png"];
 

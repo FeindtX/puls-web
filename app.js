@@ -381,12 +381,17 @@ function viewHome() {
     return h;
   }
   const r = day.recovery, s = day.sleep, st = day.strain;
-  h += `<div class="rings">
-    <a class="ring" href="#/sleep/${day.date}">${ring((s?.performance ?? 0) / 100, C.sleep, 92, 8, s ? Math.round(s.performance) + "%" : "–")}
+  const gs = s?.garminScore;
+  const gsColor = gs == null ? C.sub : gs >= 80 ? C.green : gs >= 60 ? C.yellow : C.red;
+  const gsWord = gs == null ? "kein Wert" : gs >= 90 ? "Hervorragend" : gs >= 80 ? "Gut" : gs >= 60 ? "Ausreichend" : "Schlecht";
+  h += `<div class="rings four">
+    <a class="ring" href="#/sleep/${day.date}">${ring((s?.performance ?? 0) / 100, C.sleep, 74, 7, s ? Math.round(s.performance) + "%" : "–")}
       <div class="lbl" style="color:${C.sleep}">SCHLAF</div><div class="s">${s ? hm(s.asleepMin) + " h" : "keine Nacht"}</div></a>
-    <a class="ring" href="#/recovery/${day.date}">${ring((r?.score ?? 0) / 100, recColor(r?.score), 116, 11, r ? r.score + "%" : "–")}
+    <a class="ring" href="#/sleep/${day.date}">${ring((gs ?? 0) / 100, gsColor, 74, 7, gs ?? "–")}
+      <div class="lbl" style="color:${gsColor}">SLEEP SCORE</div><div class="s">${gsWord}</div></a>
+    <a class="ring" href="#/recovery/${day.date}">${ring((r?.score ?? 0) / 100, recColor(r?.score), 96, 9, r ? r.score + "%" : "–")}
       <div class="lbl" style="color:${recColor(r?.score)}">RECOVERY</div><div class="s">${r?.hrv ? "HRV " + Math.round(r.hrv) : "kein Wert"}</div></a>
-    <a class="ring" href="#/strain/${day.date}">${ring((st?.day ?? 0) / 21, C.strain, 92, 8, num(st?.day, 1))}
+    <a class="ring" href="#/strain/${day.date}">${ring((st?.day ?? 0) / 21, C.strain, 74, 7, num(st?.day, 1))}
       <div class="lbl" style="color:${C.strain}">STRAIN</div><div class="s">${st?.kcal ? Math.round(st.kcal) + " kcal" : ""}</div></a>
   </div>`;
   h += coachCard(day);

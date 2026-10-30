@@ -75,6 +75,10 @@ main {
 .ring svg { display: block; overflow: visible; }
 .ring .lbl { font-size: 12px; font-weight: 800; letter-spacing: 1px; }
 .ring .s { font-size: 11px; color: var(--sub); }
+.rings.four { grid-template-columns: 1fr 1fr 1.3fr 1fr; gap: 2px; }
+.rings.four .ring { text-align: center; }
+.rings.four .lbl { font-size: 10px; letter-spacing: .5px; white-space: nowrap; }
+.rings.four .s { font-size: 10px; }
 .hero { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 8px 0 18px; text-align: center; }
 .hero h2 { margin: 0; font-size: 17px; }
 
